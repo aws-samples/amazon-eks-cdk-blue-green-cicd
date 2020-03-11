@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: alb-ingress
+  namespace: "flask-alb"
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/subnets: public-subnets
+    alb.ingress.kubernetes.io/security-groups: sec-grp
+    alb.ingress.kubernetes.io/conditions.flask-svc-alb-green: '[{"Field":"query-string","QueryStringConfig":{"Values":[{"Key":"group","Value":"green"}]}}]'
+    alb.ingress.kubernetes.io/conditions.forward-multiple-tg: '[{"Field":"query-string","QueryStringConfig":{"Values":[{"Key":"group","Value":"blue"}]}}]'
+    alb.ingress.kubernetes.io/actions.forward-multiple-tg: '{"Type":"forward","ForwardConfig":{"TargetGroups":[{"ServiceName":"flask-svc-alb-blue","ServicePort":"80","Weight":100},{"ServiceName":"flask-svc-alb-green","ServicePort":"8080","Weight":0}]}}'
+
+  labels:
+    app: flask-ingress
+spec:
+  rules:
+  - http:
+      paths:
+        - backend:
+            serviceName: flask-svc-alb-green
+            servicePort: 8080
+        - backend:
+            serviceName: forward-multiple-tg
+            servicePort: use-annotation
+        - path: /*
+          backend:
+            serviceName: flask-svc-alb-blue
+            servicePort: 80

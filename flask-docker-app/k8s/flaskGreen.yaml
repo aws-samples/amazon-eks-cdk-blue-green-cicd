@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-svc-green
+spec:
+  selector:
+    app: flask-deploy-green
+  ports:
+    - name: web
+      port: 8080
+      targetPort: 5000
+  type: LoadBalancer
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: flask
+  name: flask-deploy-green
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: flask-deploy-green
+    spec:
+      containers:
+      - name: flask
+        image: nikunjv/flask-image:blue
+        ports:
+          - containerPort: 5000
+        # command:
+        #   - "sh"
+        #   - "-c"
+        #   - "yum install -y python3-pip && tail -f /var/log/yum.log "
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "0.25"

@@ -1,6 +1,6 @@
 ## Building CI/CD with Blue/Green and Canary Deployments on EKS using CDK
 
-In this workshop you'll learn how to build a CI/CD pipeline (AWS CodePipeline) to develop a web-based application, containerize it, and deploy it on a Amazon EKS cluster. You'll use the blue/green method to deploy application and review the switchover using Application Load Balancer (ALB) Target-groups. You will spawn this infrastructure using AWS Cloud Development Kit (CDK), enabling you to reproduce the environment when needed, in relatively fewer lines of code.
+In this workshop you'll learn building a CI/CD pipeline (AWS CodePipeline) to develop a web-based application, containerize it, and deploy it on a Amazon EKS cluster. You'll use the blue/green method to deploy application and review the switchover using Application Load Balancer (ALB) Target-groups. You will spawn this infrastructure using AWS Cloud Development Kit (CDK), enabling you to reproduce the environment when needed, in relatively fewer lines of code.
 
 The hosting infrastructure consists of pods hosted on Blue and Green service on Kubernetes Worker Nodes, being accessed via an Application LoadBalancer. The Blue service represents the production environment accessed using the ALB DNS with http query (group=blue) whereas Green service represents a pre-production / test environment that is accessed using a different http query (group=green). The CodePipeline build stage uses CodeBuild to dockerize the application and post the images to Amazon ECR. In subsequent stages, the image is picked up and deployed on the Green service of the EKS. The Codepipeline workflow is then blocked at the approval stage, allowing the application in Green service to be tested. Once the application is confirmed to be working fine, the user can issue an approval at the Approval Stage and the application is then deployed on to the Blue Service.
 
@@ -88,7 +88,12 @@ cdk/cdk.out/CdkStackEksALBBg.template.json
 
 
 <b> Step2: Configure EKS environment:</b>
-Once the cdk is deployed successfully, go to the CloudFormation Service, select the CdkStackALBEksBg stack and go to the outputs section to copy the value from the field "ClusterConfigCommand". Then paste this output into Cloud9 terminal to configure the EKS context.
+
+Once the cdk is deployed successfully, go to the CloudFormation Service, select the CdkStackALBEksBg stack and go to the outputs section to copy the value from the field "ClusterConfigCommand".
+
+<img src="images/cfn-kubectl.png" alt="dashboard" style="border:1px solid black">
+
+Then paste this output into Cloud9 terminal to configure the EKS context.
 Ensure you can see 2 nodes listed in the output of :
 ```bash
 kubectl get nodes
@@ -141,8 +146,6 @@ Collect the DNS Name from the Load Balancer and access the homepage:
 
 <img src="images/alb-dns.png" alt="dashboard" style="border:1px solid black">
 
-<img src="images/web-default.png" alt="dashboard" style="border:1px solid black">
-
 Once the Application is pushed to the Repository, the CodePipeline will be triggered and CodeBuild will run the set of commands to dockerize the application and push it to the Amazon ECR repository. CodeBuild will in turn run the kubectl commands to create the Blue and Green services on the EKS clusters, if it does not exist. For the first time, it will pull the Flask demo Application from the Dockerhub and deploy it on Blue as well as Green service. It should say "Your Flask application is now running on a container in Amazon Web Services" as shown below:
 
 <img src="images/web-blue.png" alt="dashboard" style="border:1px solid black">
@@ -151,7 +154,7 @@ Once the Application is pushed to the Repository, the CodePipeline will be trigg
 
 Go to Services -> CodePipeline -> Pipelines -> CdkStackEksALBBg-[unique-string]
 Review the Stages and the CodeBuild Projects to understand the implementation.
-Once the Application is deployed on the Green service, access it as mentioned above: http://<DNS-name>/?group=green.
+Once the Application is deployed on the Green service, access it as mentioned above: http://ALB-DNS-name/?group=green.
 
 It is important to note that container exposes port 5000, whereas service exposes port 80 (for blue-service) OR 8080 (for green-service) which in turn is mapped to local host port on the EC2 worker node instance.
 
@@ -161,6 +164,8 @@ After testing is completed, go to the Approval Stage and Click Approve. This wil
 <img src="images/web-blue-inv.png" alt="dashboard" style="border:1px solid black">
 <img src="images/web-green-inv.png" alt="dashboard" style="border:1px solid black">
 
+
+### Configuring for Canary Deployments:
 
 Configure your ALB for Canary based deployments using below commands from your Cloud9 terminal:
 

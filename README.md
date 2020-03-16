@@ -120,6 +120,9 @@ Now, check the newly created LoadBalancer and review the listener routing rules:
 Check the Load Balancer Target-groups and ensure the healthy hosts have registered and health check is consistently passing as shown below:
 
 <img src="images/alb-tg-check2.png" alt="dashboard" style="border:1px solid black">
+
+Check the healthy hosts count graph to ensure the hosts, containers are stable:
+
 <img src="images/alb-tg-check1.png" alt="dashboard" style="border:1px solid black">
 
 <b> Step4: Upload the Application to CodeCommit repo:</b>

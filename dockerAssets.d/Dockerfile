@@ -5,6 +5,7 @@ ENV KUBECONFIG /home/kubectl/.kube/kubeconfig
 ENV HOME /home/kubectl
 # ENV KUBECONFIG /root/.kube/kubeconfig
 
+RUN apk add --no-cache curl jq python3 py3-pip 
 
 RUN \
 	mkdir /root/bin /aws; \

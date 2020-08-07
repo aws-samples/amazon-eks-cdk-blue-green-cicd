@@ -45,7 +45,7 @@ Prepare CDK prerequisite:
 
 ```bash
 sudo yum install -y npm
-npm install -g aws-cdk --force
+npm install -g aws-cdk@1.30.0 --force
 npm install -g typescript@latest
 ```
 Run git clone on this repository from Cloud9:

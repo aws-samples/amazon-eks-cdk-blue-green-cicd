@@ -105,15 +105,26 @@ Now configure the EKS cluster with the deployment, service and ingress resource 
 cd ../flask-docker-app/k8s
 ls setup.sh
 chmod +x setup.sh
+chmod +x setup2.sh
 INSTANCE_ROLE=$(aws cloudformation describe-stack-resources --stack-name CdkStackALBEksBg | jq .StackResources[].PhysicalResourceId | grep CdkStackALBEksBg-ClusterDefaultCapacityInstanceRol | tr -d '["\r\n]')
 CLUSTER_NAME=$(aws cloudformation describe-stack-resources --stack-name CdkStackALBEksBg | jq '.StackResources[] | select(.ResourceType=="Custom::AWSCDK-EKS-Cluster").PhysicalResourceId' | tr -d '["\r\n]')
-./setup.sh $AWS_REGION $INSTANCE_ROLE $CLUSTER_NAME
+echo "INSTANCE_ROLE = " $INSTANCE_ROLE 
+echo "CLUSTER_NAME = " $CLUSTER_NAME
+```
+
+Note: Before proceeding further, confirm to see that both the variables $INSTANCE_ROLE and $CLUSTER_NAME have values populated. IF not, please bring it to the attention of the workshop owner, possibly the IAM role naming convention may have changed with the version.
+Also, after EKS version 1.16 onwards, the k8 deploy API's using apps/v1beta1 is deprecated to apps/v1. The update has been made into the yaml files, however, if you are using an older version of EKS, you may need to modify this back.
+
+```bash
+./setup2.sh $AWS_REGION $INSTANCE_ROLE $CLUSTER_NAME
 ```
 
 <b>Step3: Modify the ALB Security Group:</b>
 
-Modify the Security Group for the newly spawned Application Load Balancer to add an incoming rule to allow http port 80 for the 0.0.0.0/0.
+Modify the Security Group (ControlPlaneSecurityGroup) for the newly spawned Application Load Balancer to add an incoming rule to allow http port 80 for the 0.0.0.0/0.
 Services -> EC2 -> Load Balancer -> Select the latest created ALB -> Click Description Tab -> Scroll down to locate the Security Group Edit this security group to add a new rule with following parameters: http, 80, 0.0.0.0/0
+
+Additionally, from EKS version 1.17 onwards, you would also need to change the security-group for Worker Nodes Data Plane (InstanceSecurityGroup) by adding an incoming rule to allow http port 80 for the ControlPlaneSecurityGroup (ALB).
 
 Now, check the newly created LoadBalancer and review the listener routing rules: Services -> EC2 -> Load Balancer -> Select the latest created ALB -> Click Listeners Tab -> View/Edit Rules You would see the below settings shown:
 

@@ -7,9 +7,9 @@ export REGION=$1
 export NODE_ROLE_NAME=$2
 export CLUSTER_NAME=$3
 
-echo "===================================================="
-echo "              ------CLEANUP BEGIN-----"
-echo "===================================================="
+echo "========================"
+echo "------CLEANUP BEGIN-----"
+echo "========================"
 rm flaskALBIngress_query.yaml
 rm flaskALBIngress_query2.yaml
 wget https://raw.githubusercontent.com/aws-samples/amazon-eks-cdk-blue-green-cicd/master/flask-docker-app/k8s/flaskALBIngress_query.yaml
@@ -19,19 +19,21 @@ kubectl delete svc/flask-svc-alb-blue svc/flask-svc-alb-green -n flask-alb
 kubectl delete deploy/flask-deploy-alb-blue deploy/flask-deploy-alb-green -n flask-alb
 kubectl delete ingress alb-ingress -n flask-alb
 kubectl delete deploy alb-ingress-controller -n kube-system
-echo "===================================================="
-echo "              ------CLEANUP END-----"
-echo "===================================================="
+echo "======================"
+echo "------CLEANUP END-----"
+echo "======================"
 kubectl get deploy -n flask-alb
 kubectl get svc -n flask-alb
 kubectl get pods -n flask-alb
 kubectl get ingress -n flask-alb
 kubectl get pods -n kube-system
 ls -al
-echo "===================================================="
-echo "    ------CAPTURE COMPLETE, BEGIN EXECUTION-----"
-echo "===================================================="
+echo "============================================"
+echo "------CAPTURE COMPLETE, BEGIN EXECUTION-----"
+echo "============================================"
 
+echo "Sleep for 5 seconds to allow termination of resources"
+sleep 5
 
 export ALB_POLICY_NAME=alb-ingress-controller
 policyExists=$(aws iam list-policies | jq '.Policies[].PolicyName' | grep alb-ingress-controller | tr -d '["\r\n]')
@@ -82,6 +84,14 @@ sed -i "s/public-subnets/$subnets/g" flaskALBIngress_query2.yaml
 sed -i "s/sec-grp/$sg/g" flaskALBIngress_query.yaml
 sed -i "s/sec-grp/$sg/g" flaskALBIngress_query2.yaml
 kubectl apply -f flaskALBIngress_query.yaml
-echo "===================================================="
-echo "    ------END EXECUTION-----"
-echo "===================================================="
+echo "================"
+echo "--CHECK OUTPUT--"
+echo "================"
+kubectl get deploy -n flask-alb
+kubectl get svc -n flask-alb
+kubectl get pods -n flask-alb
+kubectl get ingress -n flask-alb
+kubectl get pods -n kube-system
+echo "========================"
+echo "------END EXECUTION-----"
+echo "========================"

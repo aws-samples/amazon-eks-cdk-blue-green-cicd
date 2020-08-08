@@ -57,6 +57,12 @@ git clone https://github.com/aws-samples/amazon-eks-cdk-blue-green-cicd.git amaz
 Once cloned, run the below commands:
 ```bash
 cd amazon-eks-cicd-codebuild-eks-alb-bg
+```
+
+For this workshop, we are using CDK version 1.30. If using the latest CDK version using "npm install -g aws-cdk" (without a version specification) then you would need to modify the EKS construct to include version number too.
+
+
+```bash
 git init
 git add .
 git commit -m "Initial Commit"

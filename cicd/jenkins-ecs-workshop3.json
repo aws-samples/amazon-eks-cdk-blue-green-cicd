@@ -550,7 +550,10 @@
                 "#Give ownership to jenkins user\n",
                 "chown 1000 /data\n",
                 "chmod 777 /var/run/docker.sock\n",
-                "if [[ ! -d /data/jobs/ ]]; then cd /data; curl -LJO https://github.com/aws-samples/amazon-eks-cdk-blue-green-cicd/raw/master/cicd/jenkins-jobs-archive3.tar.gz; tar -xzvf jenkins-jobs-archive3.tar.gz; cd; ls /data/jobs/; else echo 'SKIPPING DOWNLOAD...'; fi\n"
+                "if [[ ! -d /data/jobs/ ]]; then cd /data; curl -LJO https://github.com/aws-samples/amazon-eks-cdk-blue-green-cicd/raw/master/cicd/jenkins-jobs-archive3.tar.gz; tar -xzvf jenkins-jobs-archive3.tar.gz; cd; ls /data/jobs/; else echo 'SKIPPING DOWNLOAD...'; fi\n",
+                "#Give ownership to jenkins user\n",
+                "chown -R 1000:1000 /data\n",
+                "ls -altr /data"
               ]
             ]
           }

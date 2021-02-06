@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM public.ecr.aws/p8v8e7e5/myartifacts:alpine-jan2021
 
 
 ENV KUBECONFIG /home/kubectl/.kube/kubeconfig

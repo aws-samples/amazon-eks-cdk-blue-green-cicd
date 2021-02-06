@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM public.ecr.aws/p8v8e7e5/myartifacts:alpine-3.8
 RUN apk add python3 py-pip && \
 python3 -m ensurepip && \
 pip install --upgrade pip && \

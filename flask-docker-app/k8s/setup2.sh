@@ -7,9 +7,11 @@ export REGION=$1
 export NODE_ROLE_NAME=$2
 export CLUSTER_NAME=$3
 
+set +x
 echo "========================"
 echo "------CLEANUP BEGIN-----"
 echo "========================"
+set -x
 rm flaskALBIngress_query.yaml
 rm flaskALBIngress_query2.yaml
 wget https://raw.githubusercontent.com/aws-samples/amazon-eks-cdk-blue-green-cicd/master/flask-docker-app/k8s/flaskALBIngress_query.yaml
@@ -19,20 +21,24 @@ kubectl delete svc/flask-svc-alb-blue svc/flask-svc-alb-green -n flask-alb
 kubectl delete deploy/flask-deploy-alb-blue deploy/flask-deploy-alb-green -n flask-alb
 kubectl delete ingress alb-ingress -n flask-alb
 kubectl delete deploy alb-ingress-controller -n kube-system
+set +x
 echo "======================"
 echo "------CLEANUP END-----"
 echo "======================"
+set -x
 kubectl get deploy -n flask-alb
 kubectl get svc -n flask-alb
 kubectl get pods -n flask-alb
 kubectl get ingress -n flask-alb
 kubectl get pods -n kube-system
 ls -al
+set +x
 echo "============================================"
 echo "------CAPTURE COMPLETE, BEGIN EXECUTION-----"
 echo "============================================"
 
 echo "Sleep for 5 seconds to allow termination of resources"
+set -x
 sleep 5
 
 export ALB_POLICY_NAME=alb-ingress-controller
@@ -84,14 +90,17 @@ sed -i "s/public-subnets/$subnets/g" flaskALBIngress_query2.yaml
 sed -i "s/sec-grp/$sg/g" flaskALBIngress_query.yaml
 sed -i "s/sec-grp/$sg/g" flaskALBIngress_query2.yaml
 kubectl apply -f flaskALBIngress_query.yaml
+set +x
 echo "================"
 echo "--CHECK OUTPUT--"
 echo "================"
+set -x
 kubectl get deploy -n flask-alb
 kubectl get svc -n flask-alb
-kubectl get pods -n flask-alb
 kubectl get ingress -n flask-alb
 kubectl get pods -n kube-system
+kubectl get pods -n flask-alb
+set +x
 echo "========================"
 echo "------END EXECUTION-----"
 echo "========================"

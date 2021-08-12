@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: "flask"
-        image: nikunjv/flask-image:blue
+        image: public.ecr.aws/p8v8e7e5/myartifacts:flask-image-grey
         ports:
           - containerPort: 5000
         # command:

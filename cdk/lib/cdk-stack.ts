@@ -68,14 +68,16 @@ export class CdkStackALBEksBg extends cdk.Stack {
             commands: [
               'env',
               'export TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION}',
-              '/usr/local/bin/entrypoint.sh'
+              'export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)',
+              '/usr/local/bin/entrypoint.sh',
+              'echo Logging in to Amazon ECR',
+              'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com'
             ]
           },
           build: {
             commands: [
               'cd flask-docker-app',
               `docker build -t $ECR_REPO_URI:$TAG .`,
-              '$(aws ecr get-login --no-include-email)',
               'docker push $ECR_REPO_URI:$TAG'
             ]
           },

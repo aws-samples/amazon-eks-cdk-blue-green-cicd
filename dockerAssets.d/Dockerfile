@@ -24,6 +24,7 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod a+x /usr/local/bin/kubectl /usr/local/bin/entrypoint.sh
 
+VOLUME /var/lib/docker
 
 # USER kubectl
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

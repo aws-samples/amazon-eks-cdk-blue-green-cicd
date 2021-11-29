@@ -29,6 +29,7 @@ export class CdkStackALBEksBg extends cdk.Stack {
     });
 
     const cluster = new eks.Cluster(this, 'Cluster', {
+      version: eks.KubernetesVersion.V1_21,
       vpc,
       defaultCapacity: 2,
       mastersRole: clusterAdmin,
@@ -211,7 +212,7 @@ export class CdkStackALBEksBg extends cdk.Stack {
 
 
     repository.onCommit('OnCommit', {
-      target: new targets.CodeBuildProject(codebuild.Project.fromProjectArn(this, 'OnCommitEvent', project.projectArn))
+      target: new targets.CodeBuildProject(project)
     });
 
     ecrRepo.grantPullPush(project.role!)

@@ -104,3 +104,12 @@ set +x
 echo "========================"
 echo "------END EXECUTION-----"
 echo "========================"
+
+#Add cluster sg ingress rule from alb source
+CLUSTER_SG=$(aws eks describe-cluster --name $CLUSTER_NAME --query cluster.resourcesVpcConfig.clusterSecurityGroupId | tr -d '["]')
+
+aws ec2 authorize-security-group-ingress \
+    --group-id $CLUSTER_SG \
+    --protocol -1 \
+    --port -1 \
+    --source-group $sg

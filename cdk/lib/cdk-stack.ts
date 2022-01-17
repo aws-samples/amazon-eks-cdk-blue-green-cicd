@@ -28,8 +28,20 @@ export class CdkStackALBEksBg extends cdk.Stack {
       assumedBy: new iam.AccountRootPrincipal()
     });
 
+    const controlPlaneSecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+      vpc,
+      allowAllOutbound: true
+    });
+    
+    controlPlaneSecurityGroup.addIngressRule(
+        ec2.Peer.anyIpv4(),
+        ec2.Port.tcp(80),
+        "Allow all inbound traffic by default",
+    );
+
     const cluster = new eks.Cluster(this, 'Cluster', {
       version: eks.KubernetesVersion.V1_21,
+      securityGroup: controlPlaneSecurityGroup,
       vpc,
       defaultCapacity: 2,
       mastersRole: clusterAdmin,
